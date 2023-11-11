@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.test.happyplaces"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.test.happyplaces"
@@ -15,6 +15,8 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        vectorDrawables.useSupportLibrary = true
     }
 
     buildTypes {
@@ -33,6 +35,10 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
+    buildFeatures{
+        viewBinding = true
+    }
 }
 
 dependencies {
@@ -41,7 +47,7 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.10.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-//    implements material design (includes add button)
+//    implements material design (including add button)
     implementation("com.google.android.material:material:1.10.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
