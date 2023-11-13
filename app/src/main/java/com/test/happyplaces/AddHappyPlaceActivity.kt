@@ -1,15 +1,21 @@
 package com.test.happyplaces
 
 import android.Manifest
+import android.app.Activity
 import android.app.AlertDialog
 import android.app.DatePickerDialog
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.permissionx.guolindev.PermissionX
 import com.test.happyplaces.databinding.ActivityAddHappyPlaceBinding
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -18,6 +24,7 @@ class AddHappyPlaceActivity : AppCompatActivity() {
     private var binding : ActivityAddHappyPlaceBinding? = null
     private var calendar = Calendar.getInstance()
     private lateinit var dateSetListener : DatePickerDialog.OnDateSetListener
+    private lateinit var galleryImageResultLauncher : ActivityResultLauncher<Intent>
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,6 +67,27 @@ class AddHappyPlaceActivity : AppCompatActivity() {
             }
             pictureDialog.show()
         }
+        registerOnActivityForResult()
+    }
+
+    private fun registerOnActivityForResult(){
+//        this fxn will initialize the gallery image result launcher
+        galleryImageResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
+                result ->
+                    if(result.resultCode == Activity.RESULT_OK){
+                        val imgdata : Intent? = result.data
+                        if(imgdata!= null) {
+                            val imgURI = imgdata.data
+                            try {
+                                binding?.ivPlaceImage?.setImageURI(imgURI)
+                            } catch (e: IOException) {
+                                e.printStackTrace()
+                                Toast.makeText(this, "Failed to load image from gallery", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -71,7 +99,11 @@ class AddHappyPlaceActivity : AppCompatActivity() {
                         "App Settings for additional functionality.", "OK", "Cancel")
             }
             .request { allGranted, _, deniedList ->
-                if (!allGranted) {
+                if (allGranted) {
+//                  Intent to direct us to the gallery to select an image
+                    val galleryIntent = Intent(Intent.ACTION_PICK,MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                    galleryImageResultLauncher.launch(galleryIntent)
+                }else{
                     Toast.makeText(this, "Permission Denied: $deniedList", Toast.LENGTH_LONG).show()
                 }
             }
