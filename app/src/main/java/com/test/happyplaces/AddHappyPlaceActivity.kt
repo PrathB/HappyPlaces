@@ -89,7 +89,7 @@ class AddHappyPlaceActivity : AppCompatActivity() {
                         }
                     }
         }
-
+//        this fxn will initialize the camera image result launcher
         cameraImageResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
             result ->
                 if(result.resultCode == Activity.RESULT_OK){
@@ -135,6 +135,7 @@ class AddHappyPlaceActivity : AppCompatActivity() {
             }
             .request { allGranted, _, deniedList ->
                 if (allGranted) {
+//                  Intent to direct us to the camera to capture an image
                     val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                     cameraImageResultLauncher.launch(cameraIntent)
                 }else{
