@@ -5,6 +5,7 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
@@ -25,6 +26,7 @@ class AddHappyPlaceActivity : AppCompatActivity() {
     private var calendar = Calendar.getInstance()
     private lateinit var dateSetListener : DatePickerDialog.OnDateSetListener
     private lateinit var galleryImageResultLauncher : ActivityResultLauncher<Intent>
+    private lateinit var cameraImageResultLauncher : ActivityResultLauncher<Intent>
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -86,7 +88,22 @@ class AddHappyPlaceActivity : AppCompatActivity() {
                             }
                         }
                     }
+        }
 
+        cameraImageResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
+            result ->
+                if(result.resultCode == Activity.RESULT_OK){
+                    val imgdata : Intent? = result.data
+                    if(imgdata!=null) {
+                        val thumbNail: Bitmap = imgdata.extras?.get("data") as Bitmap
+                        try {
+                            binding?.ivPlaceImage?.setImageBitmap(thumbNail)
+                        }catch(e:IOException){
+                            e.printStackTrace()
+                            Toast.makeText(this, "Failed to load image from camera", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
         }
     }
 
@@ -118,7 +135,8 @@ class AddHappyPlaceActivity : AppCompatActivity() {
             }
             .request { allGranted, _, deniedList ->
                 if (allGranted) {
-                    // TODO: Open Camera App 
+                    val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                    cameraImageResultLauncher.launch(cameraIntent)
                 }else{
                     Toast.makeText(this, "Permission Denied: $deniedList", Toast.LENGTH_LONG).show()
                 }
