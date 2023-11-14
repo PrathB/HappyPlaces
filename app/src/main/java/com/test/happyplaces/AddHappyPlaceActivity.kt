@@ -4,11 +4,15 @@ import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.DatePickerDialog
+import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -16,10 +20,14 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.permissionx.guolindev.PermissionX
 import com.test.happyplaces.databinding.ActivityAddHappyPlaceBinding
+import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
+import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import java.util.UUID
 
 class AddHappyPlaceActivity : AppCompatActivity() {
     private var binding : ActivityAddHappyPlaceBinding? = null
@@ -80,8 +88,10 @@ class AddHappyPlaceActivity : AppCompatActivity() {
                         val imgdata : Intent? = result.data
                         if(imgdata!= null) {
                             val imgURI = imgdata.data
+                            val bitmap: Bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, imgURI)
                             try {
-                                binding?.ivPlaceImage?.setImageURI(imgURI)
+                                Log.i("image stored","path: ${saveImgToInternalStorage(bitmap)}")
+                                binding?.ivPlaceImage?.setImageBitmap(bitmap)
                             } catch (e: IOException) {
                                 e.printStackTrace()
                                 Toast.makeText(this, "Failed to load image from gallery", Toast.LENGTH_SHORT).show()
@@ -95,9 +105,10 @@ class AddHappyPlaceActivity : AppCompatActivity() {
                 if(result.resultCode == Activity.RESULT_OK){
                     val imgdata : Intent? = result.data
                     if(imgdata!=null) {
-                        val thumbNail: Bitmap = imgdata.extras?.get("data") as Bitmap
+                        val thumbnail: Bitmap = imgdata.extras?.get("data") as Bitmap
                         try {
-                            binding?.ivPlaceImage?.setImageBitmap(thumbNail)
+                            Log.i("captured image stored","path: ${saveImgToInternalStorage(thumbnail)}")
+                            binding?.ivPlaceImage?.setImageBitmap(thumbnail)
                         }catch(e:IOException){
                             e.printStackTrace()
                             Toast.makeText(this, "Failed to load image from camera", Toast.LENGTH_SHORT).show()
@@ -105,6 +116,21 @@ class AddHappyPlaceActivity : AppCompatActivity() {
                     }
                 }
         }
+    }
+
+    private fun saveImgToInternalStorage(bitmap: Bitmap) : Uri{
+        val wrapper = ContextWrapper(applicationContext)
+        var file = wrapper.getDir("IMAGE_DIRECTORY", Context.MODE_PRIVATE)
+        file = File(file,"${UUID.randomUUID()}.jpg")
+        try{
+            val stream : OutputStream = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.JPEG,100,stream)
+            stream.flush()
+            stream.close()
+        } catch(e: IOException){
+            e.printStackTrace()
+        }
+        return Uri.parse(file.absolutePath)
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -148,5 +174,12 @@ class AddHappyPlaceActivity : AppCompatActivity() {
         val format =  "dd.MM.yyyy"
         val sdf = SimpleDateFormat(format, Locale.getDefault())
         binding?.etDate?.setText(sdf.format(calendar.time).toString())
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if(binding != null){
+            binding = null
+        }
     }
 }
