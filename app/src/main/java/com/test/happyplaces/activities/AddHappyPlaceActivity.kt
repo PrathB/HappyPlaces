@@ -1,4 +1,4 @@
-package com.test.happyplaces
+package com.test.happyplaces.activities
 
 import android.Manifest
 import android.app.Activity
@@ -18,8 +18,13 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import androidx.room.Room
 import com.permissionx.guolindev.PermissionX
+import com.test.happyplaces.database.PlacesDatabase
 import com.test.happyplaces.databinding.ActivityAddHappyPlaceBinding
+import com.test.happyplaces.models.PlaceModel
+import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -33,13 +38,24 @@ class AddHappyPlaceActivity : AppCompatActivity() {
     private var binding : ActivityAddHappyPlaceBinding? = null
     private var calendar = Calendar.getInstance()
     private lateinit var dateSetListener : DatePickerDialog.OnDateSetListener
+
     private lateinit var galleryImageResultLauncher : ActivityResultLauncher<Intent>
     private lateinit var cameraImageResultLauncher : ActivityResultLauncher<Intent>
+
+    private var savedImage : Uri? = null
+    private var latitude: Double = 0.0
+    private var longitude: Double = 0.0
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAddHappyPlaceBinding.inflate(layoutInflater)
         setContentView(binding?.root)
+
+        val db = Room.databaseBuilder(
+            applicationContext,
+            PlacesDatabase::class.java, "places_database"
+        ).build()
+        val userDao = db.placesDao()
 
         setSupportActionBar(binding?.toolbarAddPlace)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -55,6 +71,7 @@ class AddHappyPlaceActivity : AppCompatActivity() {
 
             updateDateInView()
         }
+        updateDateInView()
 
         binding?.etDate?.setOnClickListener {
             DatePickerDialog(
@@ -71,11 +88,38 @@ class AddHappyPlaceActivity : AppCompatActivity() {
                     _, which ->
                 when(which){
                     0 -> selectPhotoFromGallery()
-                    1-> capturePhoto()
+                    1 -> capturePhoto()
                 }
 
             }
             pictureDialog.show()
+        }
+
+        binding?.btnSave?.setOnClickListener {
+            when{
+                binding?.etTitle?.text?.isBlank()!! -> {
+                    Toast.makeText(this,"Please enter a title", Toast.LENGTH_SHORT).show()
+                }
+                binding?.etDescription?.text?.isBlank()!! ->{
+                    Toast.makeText(this,"Please enter a description", Toast.LENGTH_SHORT).show()
+                }
+                binding?.etLocation?.text?.isBlank()!! ->{
+                    Toast.makeText(this,"Please enter a location", Toast.LENGTH_SHORT).show()
+                }
+                savedImage == null ->{
+                    Toast.makeText(this,"Please select an image", Toast.LENGTH_SHORT).show()
+                }
+
+                else ->{
+                    val saveModel = PlaceModel(0,binding?.etTitle?.text?.toString()!!,savedImage.toString(),
+                        binding?.etDescription?.text?.toString()!!,binding?.etDate?.text?.toString()!!,
+                        binding?.etLocation?.text?.toString()!!,latitude, longitude)
+
+                    lifecycleScope.launch {
+                        userDao.insert(saveModel)
+                    }
+                }
+            }
         }
         registerOnActivityForResult()
     }
@@ -89,8 +133,9 @@ class AddHappyPlaceActivity : AppCompatActivity() {
                         if(imgdata!= null) {
                             val imgURI = imgdata.data
                             val bitmap: Bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, imgURI)
+                            savedImage = saveImgToInternalStorage(bitmap)
                             try {
-                                Log.i("image stored","path: ${saveImgToInternalStorage(bitmap)}")
+                                Log.i("image stored","path: $savedImage")
                                 binding?.ivPlaceImage?.setImageBitmap(bitmap)
                             } catch (e: IOException) {
                                 e.printStackTrace()
@@ -106,8 +151,9 @@ class AddHappyPlaceActivity : AppCompatActivity() {
                     val imgdata : Intent? = result.data
                     if(imgdata!=null) {
                         val thumbnail: Bitmap = imgdata.extras?.get("data") as Bitmap
+                        savedImage = saveImgToInternalStorage(thumbnail)
                         try {
-                            Log.i("captured image stored","path: ${saveImgToInternalStorage(thumbnail)}")
+                            Log.i("captured image stored","path: $savedImage")
                             binding?.ivPlaceImage?.setImageBitmap(thumbnail)
                         }catch(e:IOException){
                             e.printStackTrace()

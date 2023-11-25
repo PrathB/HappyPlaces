@@ -1,4 +1,4 @@
-package com.test.happyplaces
+package com.test.happyplaces.activities
 
 import android.content.Intent
 import android.os.Bundle
@@ -13,7 +13,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding?.root)
 
         binding?.fabAddHappyPlace?.setOnClickListener{
-            val intent = Intent(this,AddHappyPlaceActivity::class.java)
+            val intent = Intent(this, AddHappyPlaceActivity::class.java)
             startActivity(intent)
         }
 
