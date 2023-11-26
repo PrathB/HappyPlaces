@@ -6,6 +6,20 @@
     android:layout_height="match_parent"
     android:padding="5dp"
     tools:context=".activities.MainActivity">
+    
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_places"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/tv_no_records_available"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/no_happy_places_found_yet_kindly_add_one"
+        android:textSize="@dimen/no_records_available_text_size"
+        android:layout_gravity="center"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAddHappyPlace"

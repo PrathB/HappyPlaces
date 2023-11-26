@@ -1,4 +1,4 @@
-package com.test.happyplaces.models
+package com.test.happyplaces.database
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

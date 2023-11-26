@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="@dimen/cv_happy_place_corner_radius"
+        android:layout_marginHorizontal="@dimen/cv_happy_place_margin_horizontal"
+        app:cardUseCompatPadding="true"
+        app:cardElevation="@dimen/cv_happy_place_card_elevation"
+        app:layout_constraintTop_toTopOf="parent"
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="@dimen/cv_ll_happy_place_padding"
+            >
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/civ_happy_place"
+                android:layout_width="@dimen/civ_happy_place_radius"
+                android:layout_height="@dimen/civ_happy_place_radius"
+                android:layout_margin="@dimen/civ_happy_place_margin"
+                android:contentDescription="@string/happy_place_image"
+                tools:src="@mipmap/ic_launcher_round"
+                app:civ_border_color="@color/black"
+                app:civ_border_width="@dimen/civ_happy_place_border_width"
+                />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center_vertical"
+                android:layout_marginHorizontal="10dp">
+
+                <TextView
+                    android:id="@+id/tv_happy_place_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:text="Name"
+                    android:textSize="@dimen/tv_name_happy_place_text_size"
+                    />
+                <TextView
+                    android:id="@+id/tv_happy_place_description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:text="Description"
+                    android:textSize="@dimen/tv_description_happy_place_text_size"
+                    tools:textColor="#CCCCCC"/>
+
+
+            </LinearLayout>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -53,11 +53,15 @@ dependencies {
 //    implementing PermissionX library for permission handling
     implementation("com.guolindev.permissionx:permissionx:1.7.1")
 
+//    implementations related to room database and coroutine
     val roomVersion ="2.6.0"
 
     implementation("androidx.room:room-runtime:$roomVersion")
     ksp("androidx.room:room-compiler:$roomVersion")
     implementation("androidx.room:room-ktx:$roomVersion")
+
+//    implementing CircleImageView library
+    implementation("de.hdodenhof:circleimageview:3.1.0")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

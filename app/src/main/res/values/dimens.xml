@@ -16,4 +16,14 @@
     <dimen name="image_border_stroke_size">0.5dp</dimen>
     <dimen name="add_place_image_shape_radius">3dp</dimen>
     <dimen name="button_radius">10dp</dimen>
+    <dimen name="no_records_available_text_size">18sp</dimen>
+    <dimen name="cv_happy_place_margin_horizontal">2dp</dimen>
+    <dimen name="cv_happy_place_corner_radius">6dp</dimen>
+    <dimen name="cv_happy_place_card_elevation">6dp</dimen>
+    <dimen name="cv_ll_happy_place_padding">2dp</dimen>
+    <dimen name="civ_happy_place_radius">80dp</dimen>
+    <dimen name="tv_name_happy_place_text_size">20sp</dimen>
+    <dimen name="tv_description_happy_place_text_size">18sp</dimen>
+    <dimen name="civ_happy_place_margin">1dp</dimen>
+    <dimen name="civ_happy_place_border_width">0.5dp</dimen>
 </resources>

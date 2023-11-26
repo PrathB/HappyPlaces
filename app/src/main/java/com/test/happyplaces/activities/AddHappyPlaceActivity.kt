@@ -19,11 +19,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import androidx.room.Room
 import com.permissionx.guolindev.PermissionX
-import com.test.happyplaces.database.PlacesDatabase
+import com.test.happyplaces.database.DatabaseSingleton
 import com.test.happyplaces.databinding.ActivityAddHappyPlaceBinding
-import com.test.happyplaces.models.PlaceModel
+import com.test.happyplaces.database.PlaceModel
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
@@ -51,11 +50,8 @@ class AddHappyPlaceActivity : AppCompatActivity() {
         binding = ActivityAddHappyPlaceBinding.inflate(layoutInflater)
         setContentView(binding?.root)
 
-        val db = Room.databaseBuilder(
-            applicationContext,
-            PlacesDatabase::class.java, "places_database"
-        ).build()
-        val userDao = db.placesDao()
+        val database = DatabaseSingleton.getInstance(applicationContext)
+        val placesDao = database.placesDao()
 
         setSupportActionBar(binding?.toolbarAddPlace)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -116,8 +112,9 @@ class AddHappyPlaceActivity : AppCompatActivity() {
                         binding?.etLocation?.text?.toString()!!,latitude, longitude)
 
                     lifecycleScope.launch {
-                        userDao.insert(saveModel)
+                        placesDao.insert(saveModel)
                     }
+                    finish()
                 }
             }
         }
