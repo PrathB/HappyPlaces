@@ -8,6 +8,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.test.happyplaces.adapters.HappyPlaceAdapter
 import com.test.happyplaces.database.DatabaseSingleton
+import com.test.happyplaces.database.PlaceModel
 import com.test.happyplaces.database.PlacesDao
 import com.test.happyplaces.databinding.ActivityMainBinding
 import kotlinx.coroutines.launch
@@ -41,7 +42,17 @@ class MainActivity : AppCompatActivity() {
                     binding?.rvPlaces?.visibility = View.VISIBLE
                     binding?.rvPlaces?.layoutManager = LinearLayoutManager(
                         this@MainActivity,LinearLayoutManager.VERTICAL,false)
-                    binding?.rvPlaces?.adapter = HappyPlaceAdapter(it)
+
+                    val placesAdapter = HappyPlaceAdapter(it)
+
+                    placesAdapter.setOnClickListener(object: HappyPlaceAdapter.OnClickListener{
+                        override fun onCLick(position: Int, model: PlaceModel) {
+                            val intent = Intent(this@MainActivity,
+                                HappyPlaceDetailActivity::class.java)
+                            startActivity(intent)
+                        }
+                    })
+                    binding?.rvPlaces?.adapter = placesAdapter
                 }
             }
         }

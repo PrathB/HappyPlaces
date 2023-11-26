@@ -9,6 +9,7 @@ import com.test.happyplaces.database.PlaceModel
 
 class HappyPlaceAdapter(private val happyPlaces: List<PlaceModel>) :
     RecyclerView.Adapter<HappyPlaceAdapter.ViewHolder>() {
+    private var onClickListener: OnClickListener? = null
     class ViewHolder(binding: ItemHappyPlaceBinding):
         RecyclerView.ViewHolder(binding.root){
             val placeImg = binding.civHappyPlace
@@ -30,6 +31,19 @@ class HappyPlaceAdapter(private val happyPlaces: List<PlaceModel>) :
         holder.placeImg.setImageURI(Uri.parse(happyPlace.image))
         holder.name.text = happyPlace.title
         holder.description.text = happyPlace.description
+
+        holder.itemView.setOnClickListener{
+            if(onClickListener!=null){
+                onClickListener!!.onCLick(position, model = happyPlace)
+            }
+        }
     }
 
+    fun setOnClickListener(onClickListener: OnClickListener){
+        this.onClickListener = onClickListener
+    }
+
+    interface OnClickListener{
+        fun onCLick(position: Int,model: PlaceModel)
+    }
 }
