@@ -49,6 +49,7 @@ class MainActivity : AppCompatActivity() {
                         override fun onCLick(position: Int, model: PlaceModel) {
                             val intent = Intent(this@MainActivity,
                                 HappyPlaceDetailActivity::class.java)
+                            intent.putExtra(Extra_Place_Details,model)
                             startActivity(intent)
                         }
                     })
@@ -56,5 +57,9 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    companion object{
+        var Extra_Place_Details = "extra_place_details"
     }
 }

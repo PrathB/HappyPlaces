@@ -2,6 +2,7 @@ package com.test.happyplaces.database
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.io.Serializable
 
 @Entity(tableName = "places-table")
 data class PlaceModel(
@@ -13,4 +14,4 @@ data class PlaceModel(
     val location: String,
     val latitude: Double,
     val longitude: Double
-)
+) : Serializable
