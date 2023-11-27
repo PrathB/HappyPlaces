@@ -1,6 +1,7 @@
 package com.test.happyplaces.activities
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.DatePickerDialog
@@ -44,6 +45,9 @@ class AddHappyPlaceActivity : AppCompatActivity() {
     private var savedImage : Uri? = null
     private var latitude: Double = 0.0
     private var longitude: Double = 0.0
+
+    private var mHappyPlaceDetails :  PlaceModel? = null
+    @SuppressLint("SetTextI18n")
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,6 +63,10 @@ class AddHappyPlaceActivity : AppCompatActivity() {
             onBackPressedDispatcher.onBackPressed()
         }
 
+        if(intent.hasExtra(MainActivity.Extra_Place_Details)){
+           mHappyPlaceDetails = intent.getSerializableExtra(MainActivity.Extra_Place_Details,PlaceModel::class.java)
+        }
+
         dateSetListener = DatePickerDialog.OnDateSetListener {
                 view, year, month, dayOfMonth ->
             calendar.set(Calendar.YEAR,year)
@@ -68,6 +76,22 @@ class AddHappyPlaceActivity : AppCompatActivity() {
             updateDateInView()
         }
         updateDateInView()
+
+        if(mHappyPlaceDetails!=null){
+            supportActionBar?.title = "Edit Happy Place"
+            binding?.etTitle?.setText(mHappyPlaceDetails!!.title)
+            binding?.etDescription?.setText(mHappyPlaceDetails!!.description)
+
+            savedImage = Uri.parse(mHappyPlaceDetails!!.image)
+            binding?.ivPlaceImage?.setImageURI(savedImage)
+
+            binding?.etDate?.setText(mHappyPlaceDetails!!.date)
+            binding?.etLocation?.setText(mHappyPlaceDetails!!.location)
+            latitude = mHappyPlaceDetails!!.latitude
+            longitude = mHappyPlaceDetails!!.longitude
+
+            binding?.btnSave?.text = "UPDATE"
+        }
 
         binding?.etDate?.setOnClickListener {
             DatePickerDialog(
@@ -107,7 +131,7 @@ class AddHappyPlaceActivity : AppCompatActivity() {
                 }
 
                 else ->{
-                    val saveModel = PlaceModel(0,binding?.etTitle?.text?.toString()!!,savedImage.toString(),
+                    val saveModel = PlaceModel(if(mHappyPlaceDetails == null) 0 else mHappyPlaceDetails!!.id,binding?.etTitle?.text?.toString()!!,savedImage.toString(),
                         binding?.etDescription?.text?.toString()!!,binding?.etDate?.text?.toString()!!,
                         binding?.etLocation?.text?.toString()!!,latitude, longitude)
 

@@ -5,7 +5,10 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.test.happyplaces.utils.SwipeToEditCallback
 import com.test.happyplaces.adapters.HappyPlaceAdapter
 import com.test.happyplaces.database.DatabaseSingleton
 import com.test.happyplaces.database.PlaceModel
@@ -44,6 +47,7 @@ class MainActivity : AppCompatActivity() {
                         this@MainActivity,LinearLayoutManager.VERTICAL,false)
 
                     val placesAdapter = HappyPlaceAdapter(it)
+                    binding?.rvPlaces?.adapter = placesAdapter
 
                     placesAdapter.setOnClickListener(object: HappyPlaceAdapter.OnClickListener{
                         override fun onCLick(position: Int, model: PlaceModel) {
@@ -53,7 +57,16 @@ class MainActivity : AppCompatActivity() {
                             startActivity(intent)
                         }
                     })
-                    binding?.rvPlaces?.adapter = placesAdapter
+
+                    val editSwipeHandler = object : SwipeToEditCallback(this@MainActivity){
+                        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                            val adapter = binding?.rvPlaces?.adapter as HappyPlaceAdapter
+                            adapter.notifyEditItem(this@MainActivity,viewHolder.adapterPosition,
+                                ADD_PLACE_ACTIVITY_REQUEST_CODE)
+                        }
+                    }
+                    val editItemTouchHelper = ItemTouchHelper(editSwipeHandler)
+                    editItemTouchHelper.attachToRecyclerView(binding?.rvPlaces)
                 }
             }
         }
@@ -61,5 +74,6 @@ class MainActivity : AppCompatActivity() {
 
     companion object{
         var Extra_Place_Details = "extra_place_details"
+        var ADD_PLACE_ACTIVITY_REQUEST_CODE = 1
     }
 }

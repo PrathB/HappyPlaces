@@ -2,13 +2,13 @@ package com.test.happyplaces.database
 
 import androidx.room.Dao
 import androidx.room.Delete
-import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PlacesDao {
-    @Insert
+    @Upsert
     suspend fun insert(happyPlace : PlaceModel)
 
     @Delete
