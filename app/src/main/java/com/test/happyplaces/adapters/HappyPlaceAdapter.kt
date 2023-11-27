@@ -8,8 +8,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.test.happyplaces.activities.AddHappyPlaceActivity
 import com.test.happyplaces.activities.MainActivity
-import com.test.happyplaces.databinding.ItemHappyPlaceBinding
+import com.test.happyplaces.database.DatabaseSingleton
 import com.test.happyplaces.database.PlaceModel
+import com.test.happyplaces.databinding.ItemHappyPlaceBinding
 
 class HappyPlaceAdapter(private val happyPlaces: List<PlaceModel>) :
     RecyclerView.Adapter<HappyPlaceAdapter.ViewHolder>() {
@@ -52,6 +53,13 @@ class HappyPlaceAdapter(private val happyPlaces: List<PlaceModel>) :
         intent.putExtra(MainActivity.Extra_Place_Details,happyPlaces[position])
         activity.startActivityForResult(intent,requestCode)
         notifyItemChanged(position)
+    }
+
+    suspend fun removeAt(activity: Activity, position: Int) {
+        val database = DatabaseSingleton.getInstance(activity)
+        val placesDao = database.placesDao()
+        placesDao.delete(happyPlaces[position])
+
     }
 
     interface OnClickListener{
